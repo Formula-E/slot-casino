@@ -74,3 +74,5 @@ app.get("/api/balance", authenticate, async (req, res) => {
 });
 
 app.listen(PORT, () => console.log("Server attivo su porta", PORT));
+
+app.use("/api/telegram", require("./routes/telegram"));
