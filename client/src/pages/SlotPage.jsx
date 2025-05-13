@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -78,11 +78,11 @@ function SlotPage() {
       <h2 className="text-4xl font-bold text-yellow-400 mt-12 mb-8">🎰 Slot Machine Deluxe</h2>
 
       <motion.div className="text-6xl flex gap-6 mb-6" initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }}>
-        {reels.map((symbol, i) => (
-          <motion.div key={i} animate={{ rotate: spinning ? 720 : 0 }} transition={{ duration: 1 }} className="px-6 py-4 bg-black bg-opacity-50 rounded-2xl shadow-inner border-2 border-yellow-500">
-            {symbol}
-          </motion.div>
-        ))}
+              {reels.map((symbol, i) => (
+                <motion.div key={i} animate={{ rotate: spinning ? 720 : 0 }} transition={{ duration: 1 }} className="px-6 py-4 bg-black bg-opacity-50 rounded-2xl shadow-inner border-2 border-yellow-500">
+                  {symbol}
+                </motion.div>
+              ))}
       </motion.div>
 
       <div className="flex gap-4 items-center mb-4">
