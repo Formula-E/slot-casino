@@ -1,6 +1,8 @@
 
 import React from "react";
+
 function RegisterPage() {
-  return <div style={textAlign:"center", paddingTop:100}>RegisterPage Page</div>;
+  return <div className="text-center py-10">RegisterPage Page</div>;
 }
+
 export default RegisterPage;

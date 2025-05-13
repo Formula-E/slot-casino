@@ -1,6 +1,8 @@
 
 import React from "react";
+
 function DepositPage() {
-  return <div style={textAlign:"center", paddingTop:100}>DepositPage Page</div>;
+  return <div className="text-center py-10">DepositPage Page</div>;
 }
+
 export default DepositPage;

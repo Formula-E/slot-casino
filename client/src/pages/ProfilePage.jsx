@@ -1,6 +1,8 @@
 
 import React from "react";
+
 function ProfilePage() {
-  return <div style={textAlign:"center", paddingTop:100}>ProfilePage Page</div>;
+  return <div className="text-center py-10">ProfilePage Page</div>;
 }
+
 export default ProfilePage;

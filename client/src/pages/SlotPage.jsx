@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 function SlotPage() {
   const [slot, setSlot] = useState("");
@@ -23,8 +24,14 @@ function SlotPage() {
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
       <h2>🎰 SLOT MACHINE</h2>
-      <div style={{ fontSize: "2em", marginBottom: "20px" }}>{slot}</div>
-      <button onClick={spin} style={{ fontSize: "1.5em" }}>GIRA</button>
+      <motion.div
+        style={{ fontSize: "2em", marginBottom: "20px" }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1 }}
+      >
+        {slot}
+      </motion.div>
+      <button onClick={spin} className="px-8 py-4 bg-blue-500 text-white rounded-lg">GIRA</button>
       <p>{message}</p>
     </div>
   );

@@ -1,6 +1,8 @@
 
 import React from "react";
+
 function LoginPage() {
-  return <div style={textAlign:"center", paddingTop:100}>LoginPage Page</div>;
+  return <div className="text-center py-10">LoginPage Page</div>;
 }
+
 export default LoginPage;

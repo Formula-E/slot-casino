@@ -1,6 +1,8 @@
 
 import React from "react";
+
 function TelegramPage() {
-  return <div style={textAlign:"center", paddingTop:100}>TelegramPage Page</div>;
+  return <div className="text-center py-10">TelegramPage Page</div>;
 }
+
 export default TelegramPage;
