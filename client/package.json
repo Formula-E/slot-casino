@@ -1,0 +1,17 @@
+
+{
+  "name": "buffalo-slot-client",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios":,
+    "ethers": "^6.7.0" "^1.6.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start"
+  }
+}
