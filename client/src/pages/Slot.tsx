@@ -1,0 +1,1 @@
+export default function Slot() { return <div>Slot</div>; }
