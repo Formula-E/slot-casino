@@ -1,80 +1,109 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
 
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
-require('dotenv').config();
-const User = require('./models/User');
-
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(bodyParser.json());
 
+const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('✅ MongoDB connesso'))
-  .catch(err => console.error('❌ Errore MongoDB:', err));
+  useUnifiedTopology: true,
+});
 
-// Middleware auth
-const auth = (req, res, next) => {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(403).json({ message: 'Token mancante' });
+// Schemi
+const userSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  wallet: String,
+  balance: { type: Number, default: 10 },
+  telegram_id: String,
+  isAdmin: { type: Boolean, default: false }
+});
 
+const User = mongoose.model("User", userSchema);
+
+// Middleware per autenticazione
+const authenticate = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Token mancante" });
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token invalido' });
+  } catch {
+    res.status(403).json({ error: "Token invalido" });
   }
 };
 
-// Middleware admin
-const admin = (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) {
-    return res.status(403).json({ message: 'Accesso solo admin' });
-  }
-  next();
-};
-
-// ROTTE BASE
-app.post('/api/register', async (req, res) => {
+// Rotte
+app.post("/api/register", async (req, res) => {
   const { email, password, wallet } = req.body;
-  try {
-    const user = new User({ email, password, wallet: wallet.toLowerCase(), balance: 0 });
-    await user.save();
-    res.status(201).json({ message: 'Registrato' });
-  } catch (err) {
-    res.status(500).json({ message: 'Errore registrazione', error: err });
-  }
+  const existing = await User.findOne({ email });
+  if (existing) return res.status(400).json({ error: "Email già registrata" });
+  const user = await User.create({ email, password, wallet });
+  const token = jwt.sign({ id: user._id }, JWT_SECRET);
+  res.json({ token });
 });
 
-app.post('/api/login', async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email, password });
-    if (!user) return res.status(404).json({ message: 'Credenziali errate' });
-
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET);
-    res.json({ token, user });
-  } catch (err) {
-    res.status(500).json({ message: 'Errore login', error: err });
-  }
+  const user = await User.findOne({ email, password });
+  if (!user) return res.status(401).json({ error: "Credenziali errate" });
+  const token = jwt.sign({ id: user._id }, JWT_SECRET);
+  res.json({ token });
 });
 
-// ROTTA ADMIN PROTETTA
-app.get('/api/admin/users', auth, admin, async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: 'Errore recupero utenti', error: err });
-  }
+app.get("/api/profile", authenticate, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  res.json({ email: user.email, balance: user.balance, wallet: user.wallet });
 });
 
-// START SERVER
-app.listen(PORT, () => console.log(`🚀 Server attivo su http://localhost:${PORT}`));
+app.get("/api/users", authenticate, async (req, res) => {
+  const me = await User.findById(req.user.id);
+  if (!me.isAdmin) return res.status(403).json({ error: "Accesso negato" });
+  const users = await User.find();
+  res.json(users);
+});
+
+app.post("/api/update-balance", authenticate, async (req, res) => {
+  const me = await User.findById(req.user.id);
+  if (!me.isAdmin) return res.status(403).json({ error: "Accesso negato" });
+  const { userId, balance } = req.body;
+  await User.findByIdAndUpdate(userId, { balance });
+  res.json({ success: true });
+});
+
+app.post("/api/telegram-user", async (req, res) => {
+  const { telegram_id, username, first_name } = req.body;
+  let user = await User.findOne({ telegram_id });
+  if (!user) {
+    user = await User.create({
+      telegram_id,
+      email: `${username}@telegram`,
+      balance: 10,
+      wallet: "",
+    });
+  }
+  res.json({ balance: user.balance });
+});
+
+// Polling delle ricariche ETH
+app.get("/api/check-eth", async (req, res) => {
+  const wallet = process.env.WALLET_ADDRESS;
+  const infura = process.env.INFURA_PROJECT_ID;
+  const url = `https://mainnet.infura.io/v3/${infura}`;
+  // Nota: semplificato per demo. Usa websocket o event listener in prod.
+  res.json({ message: "Polling ETH non implementato in dettaglio qui." });
+});
+
+app.listen(PORT, () => console.log("✅ Server avviato sulla porta " + PORT));
