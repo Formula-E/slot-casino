@@ -1,6 +1,6 @@
 // SlotPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import useUserStore from '../store/userStore';
 import './SlotStyles.css';
 
@@ -52,11 +52,22 @@ const SlotPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 text-white flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 text-white flex flex-col items-center pt-24 px-4">
       <audio ref={spinAudio} src="/sounds/spin.mp3" />
       <audio ref={winAudio} src="/sounds/win.mp3" />
 
-      <h1 className="text-4xl font-bold mb-8 text-yellow-400">Slot Machine</h1>
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 shadow-lg flex justify-between items-center px-6 py-3 z-50 border-b border-yellow-500">
+        <h1 className="text-2xl font-bold text-yellow-400">Casino Pro</h1>
+        <nav className="flex gap-4 text-white">
+          <Link to="/slot" className="hover:text-yellow-300 transition">Slot</Link>
+          <Link to="/deposit" className="hover:text-yellow-300 transition">Ricarica</Link>
+          <Link to="/profile" className="hover:text-yellow-300 transition">Profilo</Link>
+          <span className="ml-4 text-yellow-400 font-bold">Saldo: €{user.balance.toFixed(2)}</span>
+        </nav>
+      </header>
+
+      <h2 className="text-4xl font-bold mb-8 text-yellow-400 mt-4">Slot Machine</h2>
       <div className="slot-machine border-4 border-yellow-400 rounded-2xl shadow-2xl p-4 mb-6 bg-black bg-opacity-60">
         <div className={`reel-container ${spinning ? 'spinning' : ''}`}>
           {reels.map((r, i) => (
@@ -66,7 +77,6 @@ const SlotPage = () => {
           ))}
         </div>
       </div>
-      <p className="mb-4 text-lg">Saldo: €{user.balance.toFixed(2)}</p>
       <button onClick={spin} disabled={spinning || user.balance <= 0} className="bg-yellow-400 text-black font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-300 transition">
         {spinning ? 'Girando...' : 'Gira!'}
       </button>
