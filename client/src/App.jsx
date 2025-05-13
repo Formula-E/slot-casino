@@ -1,12 +1,13 @@
+
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import SlotPage from "./pages/SlotPage";
 import DepositPage from "./pages/DepositPage";
-import AdminPage from "./pages/AdminPage";          // ✅ AGGIUNGI QUESTO
-import TelegramPage from "./pages/TelegramPage";    // ✅ E QUESTO
+import AdminPage from "./pages/AdminPage";
+import TelegramPage from "./pages/TelegramPage";
 
 function App() {
   return (

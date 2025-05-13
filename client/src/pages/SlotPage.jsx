@@ -2,39 +2,29 @@
 import React, { useState } from "react";
 
 function SlotPage() {
-  const [result, setResult] = useState("");
-  const [balance, setBalance] = useState(10); // Simulato, verrà poi legato a MongoDB
+  const [slot, setSlot] = useState("");
   const [message, setMessage] = useState("");
-
   const symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣", "💎"];
 
   const spin = () => {
     const rng = Math.random();
-    const shouldLose = rng < 0.95; // 95% delle volte perde l'utente
     let combo;
-
-    if (shouldLose) {
+    if (rng < 0.95) {
       combo = [symbols[0], symbols[1], symbols[2]];
       setMessage("Hai perso!");
-      setBalance(balance - 1);
     } else {
-      const winSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-      combo = [winSymbol, winSymbol, winSymbol];
+      const win = symbols[Math.floor(Math.random() * symbols.length)];
+      combo = [win, win, win];
       setMessage("Hai VINTO!");
-      setBalance(balance + 5);
     }
-
-    setResult(combo.join(" | "));
+    setSlot(combo.join(" | "));
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <h1>🎰 Buffalo Blitz Slot</h1>
-      <p>Saldo: {balance} ETH</p>
-      <div style={{ fontSize: "2em", margin: "20px" }}>{result}</div>
-      <button onClick={spin} style={{ fontSize: "1.5em", padding: "10px 20px" }}>
-        GIRA!
-      </button>
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h2>🎰 SLOT MACHINE</h2>
+      <div style={{ fontSize: "2em", marginBottom: "20px" }}>{slot}</div>
+      <button onClick={spin} style={{ fontSize: "1.5em" }}>GIRA</button>
       <p>{message}</p>
     </div>
   );
