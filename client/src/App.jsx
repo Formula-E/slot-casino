@@ -12,17 +12,17 @@ import TelegramPage from "./pages/TelegramPage";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/deposit" element={<DepositPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/telegram" element={<TelegramPage />} />
-      </Routes>
-    </Router>
+ <Routes>
+  <Route path="/" element={<HomePage />} />
+  <Route path="/login" element={<LoginPage />} />
+  <Route path="/register" element={<RegisterPage />} />
+  <Route path="/profile" element={<ProfilePage />} />
+  <Route path="/deposit" element={<DepositPage />} />
+  <Route path="/admin" element={<AdminPage />} />
+  <Route path="/telegram" element={<TelegramPage />} />
+  <Route path="/slot" element={<SlotPage />} />   {/* 👈 AGGIUNGI QUESTA */}
+</Routes> 
+  
   );
 }
 
