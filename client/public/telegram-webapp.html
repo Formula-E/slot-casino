@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Slot WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎰 Slot Machine</h1>
+  <p id="username">Ciao, caricamento...</p>
+  <p id="balance">Saldo: ...</p>
+  <button id="spinBtn">SPIN</button>
+  <p id="result"></p>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const user_id = tg.initDataUnsafe?.user?.id;
+    const username = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.first_name;
+
+    document.getElementById("username").textContent = `Ciao, ${username || "utente"}`;
+
+    async function fetchBalance() {
+      const res = await fetch(`https://YOUR_BACKEND_URL/api/telegram/balance/${user_id}`);
+      const data = await res.json();
+      document.getElementById("balance").textContent = `Saldo: ${data.balance} ETH`;
+    }
+
+    async function spin() {
+      const res = await fetch(`https://YOUR_BACKEND_URL/api/telegram/spin/${user_id}`, {
+        method: "POST"
+      });
+      const data = await res.json();
+      document.getElementById("result").textContent = data.result;
+      document.getElementById("balance").textContent = `Saldo: ${data.balance} ETH`;
+    }
+
+    document.getElementById("spinBtn").addEventListener("click", spin);
+    fetchBalance();
+  </script>
+</body>
+</html>
