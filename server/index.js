@@ -33,30 +33,48 @@ const auth = (req, res, next) => {
   }
 };
 
-// ROTTE
+// Middleware admin
+const admin = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(403).json({ message: 'Accesso solo admin' });
+  }
+  next();
+};
 
+// ROTTE BASE
 app.post('/api/register', async (req, res) => {
-  const { email, password } = req.body;
-  const exists = await User.findOne({ email });
-  if (exists) return res.status(400).json({ message: 'Utente esistente' });
-
-  const user = new User({ email, password });
-  await user.save();
-  res.json({ message: 'Registrazione completata' });
+  const { email, password, wallet } = req.body;
+  try {
+    const user = new User({ email, password, wallet: wallet.toLowerCase(), balance: 0 });
+    await user.save();
+    res.status(201).json({ message: 'Registrato' });
+  } catch (err) {
+    res.status(500).json({ message: 'Errore registrazione', error: err });
+  }
 });
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email, password });
-  if (!user) return res.status(400).json({ message: 'Credenziali errate' });
+  try {
+    const user = await User.findOne({ email, password });
+    if (!user) return res.status(404).json({ message: 'Credenziali errate' });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.json({ token, balance: user.balance });
+    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET);
+    res.json({ token, user });
+  } catch (err) {
+    res.status(500).json({ message: 'Errore login', error: err });
+  }
 });
 
-app.get('/api/profile', auth, async (req, res) => {
-  const user = await User.findById(req.user.id);
-  res.json({ email: user.email, balance: user.balance });
+// ROTTA ADMIN PROTETTA
+app.get('/api/admin/users', auth, admin, async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Errore recupero utenti', error: err });
+  }
 });
 
-app.listen(PORT, () => console.log(`🚀 Server avviato sulla porta ${PORT}`));
+// START SERVER
+app.listen(PORT, () => console.log(`🚀 Server attivo su http://localhost:${PORT}`));
